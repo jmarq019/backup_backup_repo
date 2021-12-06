@@ -12,12 +12,7 @@ const EditProfile = ({ setUser }) =>{
     const [formState, setFormState] = useState({
         first_name: '',
         last_name: '',
-        // username: '',
-        // email: '',
-        // password: '',
-        // confirm_password: '',
         aboutme: '',
-        profpic: '',
     });
     const history = useHistory();
     const [updateUser, { error, data }] = useMutation(UPDATE_USER);
@@ -26,26 +21,21 @@ const EditProfile = ({ setUser }) =>{
         setFormState({
         ...formState, [name]: value
     });
-    console.log(formState)
         };
+
+        const [image, setImage] = useState(null);
+
         const handleFormSubmit = async (event) => {
             event.preventDefault();
-            console.log(formState);
-            console.log(formState.aboutme);
             try {
                 console.log("handle form submit = edit profile")
             const { data } = await updateUser({
                 
             variables: {
-                // ...formState,
                 first_name: formState.first_name,
                 last_name: formState.last_name,
-                // username: formState.username,
-                // email: formState.email,
-                // password: formState.password,
-                // confirm_password: formState.confirm_password,
                 aboutme: formState.aboutme,
-                profpic: formState.profpic,
+                profpic: image,
                 user: Auth.getUser()
             },
             });
@@ -58,6 +48,23 @@ const EditProfile = ({ setUser }) =>{
         catch(err) {
             console.error(err);
         }};
+
+
+        const handleChange = (event) =>{
+            if (event.target.files[0]){
+                const reader = new FileReader();
+                reader.readAsDataURL(event.target.files[0])
+                reader.onload = function() {
+                    setImage(reader.result)
+                };
+                reader.onerror = function(error) {
+                    console.error(error);
+                };
+            }
+        } 
+
+
+
     return(
         <main className="base-grid home-columns">
             <section className="edit full-width">
@@ -83,41 +90,6 @@ const EditProfile = ({ setUser }) =>{
                             value={formState.last_name}
                             style={{minWidth:"70%",padding:"10px",borderRadius:"5px",border:"2px, solid, var(--green)",marginBottom:"1rem"}}
                         />
-                        {/* <label>Username</label>
-                        <input 
-                            type="text"
-                            placeholder="username"
-                            name="username"
-                            onChange={handleInputChange}
-                            value={formState.username}
-                            // required
-                        /> */}
-                        {/* <label>Email</label>
-                        <input 
-                            type="text"
-                            placeholder="email"
-                            name="email"
-                            onChange={handleInputChange}
-                            value={formState.email}
-                            // required
-                        />
-                        <label>Change Password</label>
-                        <input 
-                            type="text"
-                            placeholder="change pasword"
-                            name="password"
-                            onChange={handleInputChange}
-                            value={formState.password}
-                            // required
-                        />
-                        <label>Confirm Password</label>
-                        <input 
-                            placeholder="confirm password"
-                            name="confirm_password"
-                            onChange={handleInputChange}
-                            value={formState.confirm_password}
-                            // required
-                        /> */}
                         <label><FormattedMessage id="biography"/></label>
                         <input 
                             placeholder="about me"
@@ -129,20 +101,19 @@ const EditProfile = ({ setUser }) =>{
                         />
                         <label><FormattedMessage id="updateProfPic"/></label>
                         <input 
-                            className="profpic" 
-                            placeholder="upload profile picture"
-                            type="file"
-                            name="profpic"
-                            onChange={handleInputChange}
-                            value={formState.profpic}
-                            // required
-                        />
+                        className="profpic"
+                        style={{padding:"10px"}} 
+                        placeholder="upload profile picture"
+                        type="file"
+                        name="profpic"
+                        onChange={handleChange}
+                    />
                     </div>
                         <div className="full-width distribute-even fit">
                             {/* <button className="add fit">Add photo</button> */}
                             <button 
                                 className="save"
-                                disabled = {!(formState.first_name && formState.last_name && formState.aboutme && formState.profpic)}
+                                disabled = {!(formState.first_name && formState.last_name && formState.aboutme)}
                                 type = "submit"
                                 onClick={handleFormSubmit}
                                 variant = "success">

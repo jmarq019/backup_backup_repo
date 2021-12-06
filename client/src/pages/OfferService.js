@@ -11,17 +11,15 @@ import { QUERY_SERVICES, QUERY_ME } from '../utils/queries'
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { FormattedMessage } from 'react-intl';
 
-//importing firebase
-import storage from '../firebase'
 
 const OfferService = () =>{
     const { loading, data:userData } = useQuery(QUERY_ME, {
         fetchPolicy: "no-cache"
     });
     const user= loading?null:userData.me;
-    console.log(user)
+
+    const [image, setImage] = useState(null);
     
-    console.log(user);
     const history = useHistory();
     const [formState, setFormState] = useState({ 
         name: '', 
@@ -31,30 +29,8 @@ const OfferService = () =>{
         location: '', 
         hourly_rate: '', 
         phone_number: '', 
-        image: '',
     });
-    // const [addServicePost, { error, data }] = useMutation(ADD_SERVICEPOST, {
-    //     update(cache, {data: { addServicePost } }) {
-    //         try {
-    //             const { services } = cache.readQuery({ query: QUERY_SERVICES });
 
-    //             cache.writeQuery({
-    //             query: QUERY_SERVICES,
-    //             data: { services: [addServicePost, ...services] },
-    //         });
-    //         } catch (e) {
-    //         console.error(e);
-    //         }
-    
-    //         // update me object's cache
-    //         const { me } = cache.readQuery({ query: QUERY_ME });
-    //         cache.writeQuery({
-    //         query: QUERY_ME,
-    //         data: { me: { ...me, services: [...me.services, addServicePost] } },
-    //         });
-    //         //servicePost
-    //     },
-    //     });
     const [addServicePost, { error, data }] = useMutation(ADD_SERVICEPOST);
     const handleInputChange = (event) => {
         const { name, value } = event.target;
@@ -75,7 +51,7 @@ const OfferService = () =>{
                     type: formState.type,
                     hourly_rate: formState.hourly_rate,
                     phone_number: formState.phone_number,
-                    image: 'image',
+                    image: image,
                     user: Auth.getUser()
                 },
             });
@@ -101,42 +77,19 @@ const OfferService = () =>{
     console.log(formState);
 
     // this code pertains to the images
-
-    
-    const [image, setImage] = useState(null);
-    const [myUrl, setUrl] = useState("");
-
     const handleChange = (event) =>{
         if (event.target.files[0]){
-            setImage(event.target.files[0])
+            const reader = new FileReader();
+            reader.readAsDataURL(event.target.files[0])
+            reader.onload = function() {
+                setImage(reader.result)
+            };
+            reader.onerror = function(error) {
+                console.error(error);
+            };
         }
     } 
 
-    
-    const handleUpload = () => {
-        const uploadTask = storage.ref(`images/${image.name}`).put(image.name);
-        uploadTask.on(
-            "state_changed",
-            snapshot => {},
-            console.log(image),
-            error => {
-                console.log(error);
-            },
-            () => {
-                storage
-                .ref("images")
-                .child(image.name)                    
-                .getDownloadURL()
-                .then(url =>{
-                    console.log(url)
-                    setUrl(url);
-                });
-            }
-            
-        )
-
-    };
-    //end of images code
 
 
 
@@ -265,7 +218,7 @@ const OfferService = () =>{
                 user?.servicePost.map((post) => ( 
                     <div className="" key={post._id}>
                         <div className="find">
-                            <img/>
+                        <img id="profpic" src="" alt="Profile Picture" src={post.image} style={{ maxHeight: '150px' }} />
                             <div>
                                 <h6><FormattedMessage id="serviceName"/>: {post.name}</h6>
                                 <p><FormattedMessage id="typeOfService"/>:{post.type}</p>

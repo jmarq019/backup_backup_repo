@@ -117,7 +117,7 @@ const FindServicePost = () =>{
                     <h2 className="ed"><FormattedMessage id="results"/></h2>
                     <div className="find">
                     <div className="container">
-                        <img/>
+                    <img id="profpic" src="" alt="Profile Picture" src={post.image} style={{ maxHeight: '150px' }} />
                             <h6><FormattedMessage id="serviceName"/>: {post?.name}</h6>
                             <p><FormattedMessage id="description"/>: {post?.description}</p>
                             <p><FormattedMessage id="location"/>: {post?.location}</p>

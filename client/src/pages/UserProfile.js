@@ -10,14 +10,7 @@ import { FormattedMessage } from 'react-intl';
 import "./UserProfile.css";
 
 const UserProfile =() => {
-    // const {_id} = useParams();
-    // const { loading, data } = useQuery(
-    //     _id ? QUERY_FIND_USER : QUERY_ME,
-    //     {
-    //     variables: { _id: _id },
-    // }
-    // );
-    // const findUser = data?.me || data?.findUser || {};
+
     
     const { loading, data } = useQuery(QUERY_ME, {
     fetchPolicy: "no-cache"
@@ -32,7 +25,7 @@ const UserProfile =() => {
                 <h2 className="ed"><FormattedMessage id="myProfile"/></h2>
                 <div className="empw">
                     <div class="center">
-                    {/* <img id="profpic" src="" alt="Profile Picture"/> */}
+                    <img id="profpic" src="" alt="Profile Picture" src={data?.me?.profpic} style={{ maxHeight: '150px' }} />
                     <h2>{`${user?.first_name} ${user?.last_name}`} </h2>
                     <p>Email: {user?.email}</p>
                     <p><FormattedMessage id="biography"/>: {user?.aboutme}</p> 
